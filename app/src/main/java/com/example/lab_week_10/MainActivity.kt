@@ -24,13 +24,11 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.text_total, total)
     }
     private fun prepareViewModel(){
-        viewModel.total
-        var total = viewModel.total
-        updateText(total)
+        viewModel.total.observe(this){total->
+            updateText(total)
+        }
         findViewById<Button>(R.id.button_increment).setOnClickListener {
             viewModel.incrementTotal()
-            total = viewModel.total
-            updateText(total)
         }
     }
 }
