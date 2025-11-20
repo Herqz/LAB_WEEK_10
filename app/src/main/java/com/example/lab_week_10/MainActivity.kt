@@ -3,6 +3,7 @@ package com.example.lab_week_10
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -11,7 +12,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.example.lab_week_10.database.Total
 import com.example.lab_week_10.database.TotalDatabase
+import com.example.lab_week_10.database.TotalObject
 import com.example.lab_week_10.viewmodels.TotalViewModel
+import java.util.Date
 
 class MainActivity : AppCompatActivity() {
     private val db by lazy { prepareDatabase() }
@@ -27,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        db.totalDao().update(Total(ID, viewModel.total.value!!))
+        db.totalDao().update(Total(ID, TotalObject(viewModel.total.value!!, Date().toString())))
     }
 
     private fun updateText(total: Int) {
@@ -52,10 +55,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeValueFromDatabase() {
         val total = db.totalDao().getTotal(ID)
-        if (total.isEmpty()) {
-            db.totalDao().insert(Total(id = 1, total = 0))
+        if (total.isEmpty() || total.first().total.date.isEmpty()) {
+            db.totalDao().insert(Total(id = 1, TotalObject(viewModel.total.value!!, Date().toString())))
         } else {
-            viewModel.setTotal(total.first().total)
+            viewModel.setTotal(total.first().total.value)
+            Toast.makeText(this, total.first().total.date, Toast.LENGTH_SHORT).show()
         }
     }
 
